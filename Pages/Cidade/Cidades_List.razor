@@ -1,0 +1,23 @@
+﻿<h3>Cidades</h3>
+
+@if (!Carregado)
+{
+    <p>Carregando..</p>
+}
+else if (!Cidades.Any())
+{
+    <p>Não há cidades cadastradas!</p>
+}
+else
+{
+    @foreach (var cidade in Cidades)
+    {
+        <p>@cidade.Descricao</p>
+    }
+}
+
+@code {
+    List<Cidade> Cidades { get; set; }
+
+    bool Carregado => Cidades != null;
+}

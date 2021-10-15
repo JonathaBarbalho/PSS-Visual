@@ -17,29 +17,21 @@ namespace PSS_Visual.Controllers
         readonly ApplicationDbContext _context;
         public CidadesController(ApplicationDbContext context) => _context = context;
 
-        // GET: api/Cidades
+        #region GET
+        //[Route("{action}")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cidade>>> GetCidades()
-        {
-            return await _context.Cidades.ToListAsync();
-        }
+        public async Task<ActionResult<IEnumerable<Cidade>>> GetCidades() => await _context.Cidades.ToListAsync();
 
-        // GET: api/Cidades/5
+        //[Route("{action}/{id}")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Cidade>> GetCidade(int id)
         {
-            var cidade = await _context.Cidades.FindAsync(id);
-
-            if (cidade == null)
-            {
-                return NotFound();
-            }
-
-            return cidade;
+            if (CidadeExists(id)) return await _context.Cidades.FirstOrDefaultAsync(x => x.ID == id);
+            else return NotFound();
         }
+        #endregion
 
-        // PUT: api/Cidades/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        #region PUT
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCidade(int id, Cidade cidade)
         {
@@ -57,19 +49,27 @@ namespace PSS_Visual.Controllers
 
             return NoContent();
         }
+        #endregion
 
-        // POST: api/Cidades
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        #region POST
         [HttpPost]
         public async Task<ActionResult<Cidade>> PostCidade(Cidade cidade)
         {
-            _context.Cidades.Add(cidade);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Cidades.Add(cidade);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCidade", new { id = cidade.ID }, cidade);
+                return CreatedAtAction("GetCidade", new { id = cidade.ID }, cidade);
+            }
+            catch (Exception e)
+            {
+                return NoContent();
+            }
         }
+        #endregion
 
-        // DELETE: api/Cidades/5
+        #region DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCidade(int id)
         {
@@ -84,7 +84,8 @@ namespace PSS_Visual.Controllers
 
             return NoContent();
         }
-
+        #endregion
+        
         bool CidadeExists(int id) => _context.Cidades.Any(x => x.ID == id);
         bool CidadeExists(Cidade cidade) => _context.Cidades.Any(x => x.Descricao == cidade.Descricao && x.UF == cidade.UF);
     }
